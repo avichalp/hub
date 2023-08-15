@@ -19,7 +19,10 @@ services:
       - my_network
 
   postgres:
-    image: 'postgres:15-alpine'
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    command: postgres -c 'wal_level=logical' -c 'max_replication_slots=1' -c 'max_wal_senders=1' -c 'max_worker_processes=1' -c 'max_connections=1000'
     restart: unless-stopped
     ports:
       - '6541:5432' # Use a port unlikely to be in use so the example "Just Works"

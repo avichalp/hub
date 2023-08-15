@@ -1,0 +1,20 @@
+FROM postgres:15.4
+
+# Install necessary dependencies and tools
+RUN apt-get update && apt-get install -y \
+    locales && \
+    localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+
+RUN apt-get install -y git build-essential postgresql-server-dev-all
+
+# Clone and build wal2json
+RUN git clone https://github.com/eulerto/wal2json.git \
+    && cd wal2json \
+    && make && make install
+
+# Clean up
+RUN apt-get remove -y git build-essential postgresql-server-dev-all \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf wal2json
